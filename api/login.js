@@ -3,7 +3,7 @@ export default {
     //登录
     submitLogin(userInfo) {
         return request({
-            url: `/ucenterservice/apimember/login`,
+            url: `/educenter/member/login`,
             method: 'post',
             data: userInfo
         })
@@ -11,10 +11,10 @@ export default {
     //根据token获取用户信息
     getLoginInfo() {
         return request({
-                url: `/ucenterservice/apimember/auth/getLoginInfo`,
-                method: 'get',
-                // headers: {'token': cookie.get('guli_token')}
-            })
-            //headers: {'token': cookie.get('guli_token')} 
+            url: `/educenter/member/getUserInfo`,
+            method: 'post',
+            // headers: {'token': cookie.get('guli_token')}
+        })
+        //headers: {'token': cookie.get('guli_token')} 
     }
 }

@@ -46,6 +46,7 @@
   import cookie from 'js-cookie'
 
   import loginApi from '@/api/login'
+
   export default {
     layout: 'sign',
 
@@ -61,27 +62,25 @@
 
     methods: {
       submitLogin(){
-            loginApi.submitLogin(this.user).then(response => {
-              if(response.data.success){
+        loginApi.submitLogin(this.user).then(res => {
+          // 请求头中设置token
+          cookie.set("guli_token", res.data.data.token, { domain: 'localhost' })
+          console.log(cookie.get("guli_token"))
+          // 根据token获取userInfo
+          loginApi.getLoginInfo().then(res => {
+            this.loginInfo = res.data.data.userInfo
+            // userInfo放入cookie，其他页面也可以使用
+            cookie.set("guli_ucenter", JSON.stringify(this.loginInfo), { domain: 'localhost' })
+            // 跳转到首页
+            window.location.href = "/"
+          })
+        })
 
-                //把token存在cookie中、也可以放在localStorage中
-                cookie.set('guli_token', response.data.data.token, { domain: 'localhost' })
-                //登录成功根据token获取用户信息
-                loginApi.getLoginInfo().then(response => {
-                  
-                  this.loginInfo = response.data.data.item
-                  //将用户信息记录cookie
-                  cookie.set('guli_ucenter', this.loginInfo, { domain: 'localhost' })
-                  //跳转页面
-                  window.location.href = "/";
-                })
-              }
-            })
       },
 
       checkPhone (rule, value, callback) {
         //debugger
-        if (!(/^1[34578]\d{9}$/.test(value))) {
+        if (!(/\d{11}$/.test(value))) {
           return callback(new Error('手机号码格式不正确'))
         }
         return callback()

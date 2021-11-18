@@ -67,7 +67,7 @@
 <script>
   import '~/assets/css/sign.css'
   import '~/assets/css/iconfont.css'
-
+  
   import registerApi from '@/api/register'
 
   export default {
@@ -87,20 +87,9 @@
     },
     methods: {
       getCodeFun() {
-        //sending = false
-        //his.sending原为true,请求成功，!this.sending == true，主要是防止有人把disabled属性去掉，多次点击；
-        if (!this.sending)
-          return;
-
-        //debugger
-        // prop 换成你想监听的prop字段
-        this.$refs.userForm.validateField('mobile', (errMsg) => {
-          if (errMsg == '') {
-            registerApi.getMobile(this.params.mobile).then(res => {
-              this.sending = false;
-              this.timeDown();
-            });
-          }
+        registerApi.getMobileCode(this.params.mobile).then(() => {
+          this.sending = false
+          this.timeDown()
         })
       },
 
@@ -108,10 +97,10 @@
         let result = setInterval(() => {
           --this.second;
           this.codeTest = this.second
+          // 还原
           if (this.second < 1) {
             clearInterval(result);
             this.sending = true;
-            //this.disabled = false;
             this.second = 60;
             this.codeTest = "获取验证码"
           }
@@ -119,23 +108,27 @@
 
       },
       submitRegister() {
-        this.$refs['userForm'].validate((valid) => {
-          if (valid) {
-            registerApi.submitRegister(this.params).then(response => {
-              //提示注册成功
-              this.$message({
-                type: 'success',
-                message: "注册成功"
-              })
-              this.$router.push({path: '/login'})
+        console.log(this.params)
+        registerApi.submitRegister(this.params).then((res) => {
+          console.log(res)
+          if(res.data.code === 20000) {
+             this.$message({
+              type: 'success',
+              message: "注册成功"
             })
+            // 跳转到登录页面
+            this.$router.push({path: "/login"})
           }
+         this.$message({
+            type: 'error',
+            message: `${res.data.message}`
+          })
         })
       },
 
       checkPhone (rule, value, callback) {
         //debugger
-        if (!(/^1[34578]\d{9}$/.test(value))) {
+        if (!(/\d{11}$/.test(value))) {
           return callback(new Error('手机号码格式不正确'))
         }
         return callback()

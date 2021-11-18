@@ -2,7 +2,7 @@ import request from '@/utils/request'
 
 export default {
     //根据手机号码发送短信
-    getMobile(mobile) {
+    getMobileCode(mobile) {
         return request({
             url: `/edumsm/send/${mobile}`,
             method: 'get'
@@ -11,7 +11,7 @@ export default {
     //用户注册
     submitRegister(formItem) {
         return request({
-            url: `/ucenterservice/apimember/register`,
+            url: `/educenter/member/register`,
             method: 'post',
             data: formItem
         })
