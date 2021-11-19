@@ -135,6 +135,7 @@ import "~/assets/css/theme.css";
 import "~/assets/css/global.css";
 import "~/assets/css/web.css";
 import cookie from 'js-cookie'
+import loginApi from '@/api/login'
 
 export default {
     data() {
@@ -152,6 +153,9 @@ export default {
     },
 
     created() {
+      if(this.$route.query.token) {
+        this.wxLogin()
+      }
       this.showInfo()
     },
 
@@ -165,10 +169,21 @@ export default {
       },
 
       logout() {
-         cookie.set("guli_ucenter", '', { domain: 'localhost' })
-         cookie.set("guli_token", '', { domain: 'localhost' })
-         // 回到首页
-         window.location.href = '/'
+        cookie.set("guli_ucenter", '', { domain: 'localhost' })
+        cookie.set("guli_token", '', { domain: 'localhost' })
+        // 回到首页
+        window.location.href = '/'
+      },
+
+      wxLogin() {
+        this.token = this.$route.query.token
+        cookie.set("guli_ucenter", '', { domain: 'localhost' })
+        cookie.set("guli_token", this.token, { domain: 'localhost' })
+        loginApi.getLoginInfo().then(res => {
+          this.loginInfo = res.data.data.userInfo
+          cookie.set("guli_ucenter", JSON.stringify(this.loginInfo), { domain: 'localhost' })
+        })
+
       }
 
     }
