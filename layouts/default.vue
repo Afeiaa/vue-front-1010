@@ -153,7 +153,7 @@ export default {
     },
 
     created() {
-      if(this.$route.query.token) {
+      if(this.$route.query && this.$route.query.token) {
         this.wxLogin()
       }
       this.showInfo()
@@ -172,7 +172,8 @@ export default {
         cookie.set("guli_ucenter", '', { domain: 'localhost' })
         cookie.set("guli_token", '', { domain: 'localhost' })
         // 回到首页
-        window.location.href = '/'
+        this.$router.push({path: "/"})
+        // window.location.href = '/'
       },
 
       wxLogin() {
