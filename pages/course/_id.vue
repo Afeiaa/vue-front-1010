@@ -38,8 +38,11 @@
                           <a class="c-fff vam" title="收藏" href="#" >收藏</a>
                       </span>
                   </section>
-                  <section class="c-attr-mt">
-                      <a title="立即观看" class="comm-btn c-btn-3" @click="createOrder()">立即购买</a>
+                  <section v-if="isbuyCourse || Number(course.price)===0" class="c-attr-mt">
+                    <a href="#" title="立即观看" class="comm-btn c-btn-3" >立即观看</a>
+                  </section>
+                  <section v-else class="c-attr-mt">
+                      <a href="#" title="立即购买" class="comm-btn c-btn-3" @click="createOrder()">立即购买</a>
                   </section>
               </section>
           </aside>
@@ -275,35 +278,37 @@ export default {
         courseId:'',
         teacherId: ''
       },
-      courseInfo:{},
+      course:{},
+      chapterList: {},
+      isbuyCourse: false,
       chapterVideoList:[],
-      isbuyCourse:false
     }
   },
 
   asyncData({ params, error }) {
-    return course.getById(params.id).then(response => {
-      console.log(response.data.data);
-      return { 
-        course: response.data.data.course,
-        chapterList: response.data.data.chapterVoList,
+    return { 
         courseId: params.id
       }
-    })
   },
   
   created() {
-    // this.initCourseInfo()
+    this.initCourseInfo()
     this.initComment()
   },
 
    methods:{
     //获取课程详情
     initCourseInfo() {
-      course.getById(this.courseId)
+      if (!this.$route.params.id) {
+        return;
+      }
+      course.getById(this.$route.params.id)
             .then(response => {
-              this.courseInfo=response.data.data.courseIndexInfo
-              this.chapterVideoList=response.data.data.characterList
+              console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" + response.data.data.isBuy)
+              this.course = response.data.data.course,
+              this.chapterList = response.data.data.chapterVoList,
+              this.isbuyCourse = response.data.data.isBuy
+              
             })
     },
 
